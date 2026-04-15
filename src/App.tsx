@@ -279,7 +279,7 @@ export default function App() {
 
             {/* Main Image */}
             <div 
-              className="max-w-[90vw] max-h-[90vh] p-4 md:p-8"
+              className="p-4 md:p-8"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
               onClick={(e) => e.stopPropagation()}
@@ -287,7 +287,7 @@ export default function App() {
               <img 
                 src={displayedGallery[lightboxIndex].imageUrl} 
                 alt="Nail Design"
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                className="max-w-[85vw] max-h-[80vh] object-contain rounded-lg shadow-2xl"
               />
             </div>
           </div>
