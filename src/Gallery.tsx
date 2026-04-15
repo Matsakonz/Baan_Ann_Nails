@@ -284,7 +284,7 @@ export default function Gallery() {
 
             {/* Main Image */}
             <div 
-              className="max-w-[90vw] max-h-[90vh] p-4 md:p-8"
+              className="flex items-center justify-center w-full h-full p-4 md:p-8"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
               onClick={(e) => e.stopPropagation()}
@@ -292,7 +292,7 @@ export default function Gallery() {
               <img 
                 src={displayedGallery[lightboxIndex].imageUrl} 
                 alt="Nail Design"
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
               />
             </div>
           </div>
