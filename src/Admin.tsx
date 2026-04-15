@@ -81,6 +81,8 @@ export default function Admin() {
   }, []);
 
   const loadImages = async () => {
+    console.log('Loading images, Supabase available:', isSupabaseAvailable);
+    
     if (isSupabaseAvailable) {
       try {
         const { data, error } = await supabase!
@@ -98,15 +100,22 @@ export default function Admin() {
         console.error('Error loading images:', error);
       }
     } else {
+      console.log('Loading from localStorage');
       // Fallback to localStorage
       try {
         const savedImages = localStorage.getItem('nailGalleryImages');
+        console.log('Found saved images:', savedImages ? 'yes' : 'no');
         if (savedImages) {
           const parsedImages = JSON.parse(savedImages);
+          console.log('Parsed images:', parsedImages.length);
           setUploadedImages(parsedImages);
+        } else {
+          console.log('No saved images found');
+          setUploadedImages([]);
         }
       } catch (error) {
         console.error('Error loading saved images:', error);
+        setUploadedImages([]);
       }
     }
   };
@@ -114,6 +123,9 @@ export default function Admin() {
   
   const handleFileUpload = async (files: FileList | null) => {
     if (!files) return;
+
+    console.log('Upload started, Supabase available:', isSupabaseAvailable);
+    console.log('Files to upload:', files.length);
 
     if (isSupabaseAvailable) {
       // Upload to Supabase
@@ -129,6 +141,7 @@ export default function Admin() {
 
             if (uploadError) {
               console.error('Error uploading file:', uploadError);
+              console.error('Upload error details:', JSON.stringify(uploadError, null, 2));
               continue;
             }
 
@@ -147,6 +160,7 @@ export default function Admin() {
 
             if (insertError) {
               console.error('Error inserting image data:', insertError);
+              console.error('Insert error details:', JSON.stringify(insertError, null, 2));
             }
           } catch (error) {
             console.error('Error uploading image:', error);
@@ -154,34 +168,42 @@ export default function Admin() {
         }
       }
     } else {
+      console.log('Using localStorage fallback for upload');
       // Fallback to localStorage
       const newImages: UploadedImage[] = [];
       
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (file.type.startsWith('image/')) {
+          console.log(`Processing file ${i + 1}: ${file.name}`);
           const reader = new FileReader();
           const preview = await new Promise<string>((resolve) => {
             reader.onload = () => resolve(reader.result as string);
             reader.readAsDataURL(file);
           });
           
-          newImages.push({
+          const newImage = {
             id: `${Date.now()}-${i}`,
             image_url: preview,
             shape: selectedShape,
             created_at: new Date().toISOString(),
             file,
             preview
-          });
+          };
+          
+          newImages.push(newImage);
+          console.log(`Added image: ${newImage.id}`);
         }
       }
 
+      console.log(`Adding ${newImages.length} images to state`);
       setUploadedImages(prev => [...prev, ...newImages]);
       
       // Save to localStorage
       const allImages = [...uploadedImages, ...newImages];
+      console.log(`Saving ${allImages.length} images to localStorage`);
       localStorage.setItem('nailGalleryImages', JSON.stringify(allImages));
+      console.log('Upload completed successfully');
     }
 
     // Reload images after upload
